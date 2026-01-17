@@ -16,6 +16,117 @@ This repository contains sample applications demonstrating each of the 9 core ag
 | **Router** | Multi-Source Knowledge Base | Routes queries to specialized agents in parallel, synthesizes results |
 | **Custom Workflows** | Content Pipeline | StateGraph with research → write → review loop and conditional edges |
 
+## Pattern Selection Flowchart
+
+Use this decision tree to select the right pattern for your use case:
+
+```
+                                    ┌─────────────────────────────┐
+                                    │   START: What type of       │
+                                    │   agentic system do you     │
+                                    │   need to build?            │
+                                    └──────────────┬──────────────┘
+                                                   │
+                         ┌─────────────────────────┼─────────────────────────┐
+                         │                         │                         │
+                         ▼                         ▼                         ▼
+              ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+              │  Single Agent    │    │  Multi-Agent     │    │  Custom Logic    │
+              │  (one agent,     │    │  (coordinate     │    │  (complex flows, │
+              │   many skills)   │    │   specialists)   │    │   loops, gates)  │
+              └────────┬─────────┘    └────────┬─────────┘    └────────┬─────────┘
+                       │                       │                       │
+                       ▼                       │                       ▼
+              ┌──────────────────┐             │              ┌──────────────────┐
+              │     SKILLS       │             │              │ CUSTOM WORKFLOWS │
+              │                  │             │              │                  │
+              │ • One agent      │             │              │ • StateGraph     │
+              │ • Dynamic skills │             │              │ • Branching      │
+              │ • Direct user    │             │              │ • Looping        │
+              │   interaction    │             │              │ • Quality gates  │
+              └──────────────────┘             │              └──────────────────┘
+                                               │
+                    ┌──────────────────────────┼──────────────────────────┐
+                    │                          │                          │
+                    ▼                          ▼                          ▼
+         ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+         │ Do agents need  │       │ Do you need     │       │ Is the workflow │
+         │ to talk to user │       │ parallel        │       │ sequential with │
+         │ directly?       │       │ execution?      │       │ state/stages?   │
+         └────────┬────────┘       └────────┬────────┘       └────────┬────────┘
+                  │                         │                         │
+         ┌────────┴────────┐       ┌────────┴────────┐       ┌────────┴────────┐
+         │                 │       │                 │       │                 │
+        YES               NO      YES               NO      YES               NO
+         │                 │       │                 │       │                 │
+         ▼                 │       ▼                 │       ▼                 │
+┌──────────────┐           │ ┌──────────────┐       │ ┌──────────────┐        │
+│   HANDOFFS   │           │ │    ROUTER    │       │ │   HANDOFFS   │        │
+│              │           │ │              │       │ │              │        │
+│ • Stages     │           │ │ • Parallel   │       │ │ • Stage-     │        │
+│ • Direct     │           │ │   dispatch   │       │ │   based      │        │
+│   user chat  │           │ │ • Synthesize │       │ │ • User       │        │
+│ • Transfers  │           │ │   results    │       │ │   facing     │        │
+└──────────────┘           │ └──────────────┘       │ └──────────────┘        │
+                           │                        │                         │
+                           └───────────┬────────────┘                         │
+                                       │                                      │
+                                       ▼                                      │
+                          ┌─────────────────────────┐                         │
+                          │ What's your primary     │◄────────────────────────┘
+                          │ concern?                │
+                          └───────────┬─────────────┘
+                                      │
+        ┌─────────────────┬───────────┼───────────┬─────────────────┐
+        │                 │           │           │                 │
+        ▼                 ▼           ▼           ▼                 ▼
+┌──────────────┐ ┌──────────────┐ ┌────────┐ ┌──────────────┐ ┌──────────────┐
+│ Context bloat│ │ Exact wording│ │ Scale  │ │ Centralized  │ │ Large data   │
+│ from tools   │ │ preservation │ │ to many│ │ control      │ │ processing   │
+│              │ │              │ │ agents │ │              │ │              │
+└──────┬───────┘ └──────┬───────┘ └───┬────┘ └──────┬───────┘ └──────┬───────┘
+       │                │             │             │                │
+       ▼                ▼             ▼             ▼                ▼
+┌──────────────┐ ┌──────────────┐ ┌────────────┐ ┌──────────┐ ┌──────────────┐
+│ DEEP AGENTS  │ │  SUPERVISOR  │ │HIERARCHICAL│ │SUBAGENTS │ │  CONTEXT     │
+│              │ │ FORWARD TOOL │ │   TEAMS    │ │          │ │ QUARANTINE   │
+│ • Isolated   │ │              │ │            │ │ • Central│ │              │
+│   subagents  │ │ • Verbatim   │ │ • Nested   │ │   super- │ │ • Isolate    │
+│ • Summaries  │ │   forwarding │ │   teams    │ │   visor  │ │   huge       │
+│   only       │ │ • Audit      │ │ • Team     │ │ • Domain │ │   outputs    │
+│ • Planning   │ │   trails     │ │   leads    │ │   experts│ │ • Return     │
+│   tools      │ │ • Legal/med  │ │ • 10+      │ │ • Synthe-│ │   summaries  │
+└──────────────┘ └──────────────┘ │   agents   │ │   size   │ └──────────────┘
+                                  └────────────┘ └──────────┘
+```
+
+### Quick Selection Guide
+
+| Question | Answer | Pattern |
+|----------|--------|---------|
+| Do you need a single agent with many capabilities? | Yes | **Skills** |
+| Do agents need to talk directly to users in stages? | Yes | **Handoffs** |
+| Do you need to query multiple sources in parallel? | Yes | **Router** |
+| Are tool outputs huge and causing context bloat? | Yes | **Deep Agents** or **Context Quarantine** |
+| Must expert responses be forwarded without changes? | Yes | **Supervisor Forward Tool** |
+| Do you have 10+ specialists across multiple teams? | Yes | **Hierarchical Teams** |
+| Do you need a central coordinator for domain experts? | Yes | **Subagents** |
+| Do you need complex branching, loops, or quality gates? | Yes | **Custom Workflows** |
+
+### Pattern Selection by Use Case
+
+| Use Case | Recommended Pattern | Why |
+|----------|---------------------|-----|
+| Customer support with stages | **Handoffs** | Natural conversation flow, state-driven |
+| Code assistant (multi-language) | **Skills** | Dynamic expertise, single agent |
+| Legal/medical document review | **Supervisor Forward** | Exact wording, audit trails |
+| Research with many searches | **Deep Agents** | Context isolation, planning |
+| Enterprise knowledge base | **Router** | Parallel queries, synthesis |
+| Product launch coordination | **Hierarchical Teams** | Multiple teams, nested structure |
+| Personal finance advisor | **Subagents** | Domain experts, centralized |
+| Data analytics pipeline | **Context Quarantine** | Large outputs, summaries |
+| Content with review cycles | **Custom Workflows** | Loops, quality gates |
+
 ## Quick Start
 
 ### 1. Setup Environment
